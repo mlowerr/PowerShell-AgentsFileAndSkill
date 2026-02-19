@@ -1,0 +1,33 @@
+Process the following request to build a new PowerShell utility.
+
+{{$USER_REQUEST}}
+
+You MUST strictly adhere to the following Generalized Requirements for both the UI and the underlying script.
+
+### PART A: UI Requirements (The Wrapper)
+- Build as a PowerShell Windows Forms UI (`System.Windows.Forms` + `System.Drawing`) compatible with Windows PowerShell 5.1.
+- Provide clearly labeled fields for all required script inputs, supporting list-style input for multi-item jobs.
+- Validate required fields before execution and show inline guidance when input is missing.
+- Include one primary action button to execute the script. Disable it while running; re-enable when done.
+- Include a read-only multiline output pane showing full script output in execution order, preserving line breaks.
+- Use semantic colors for status: Green (Success), Yellow/Amber (Warning/Partial), Red (Error/Failed), Default (Neutral info).
+- Display changed/generated files as clickable UI links that open via `Start-Process`. Group them under "Generated outputs".
+- Show a concise run summary at the end (count succeeded/failed/skipped).
+- Surface all stderr/stdout without suppressing actionable errors. 
+- Include a visible caution label in the UI if the script performs destructive operations.
+
+### PART B: Wrapped-Script Requirements (The Core)
+- Use a `param(...)` block with explicit, named parameters. Include aliases and switches (`-WhatIf`, `-Verbose`, `-Force`) where relevant.
+- Normalize multi-item input into a deterministic list (trim whitespace, de-duplicate, preserve order).
+- Validate paths/IDs early and fail fast with clear errors.
+- Emit human-readable line-by-line status using prefixes: `SUCCESS:`, `WARNING:`, `ERROR:`, `OUTPUT:`.
+- Always print a final summary block with totals (processed/succeeded/failed/skipped).
+- Emit explicit file lines for created/updated artifacts (e.g., `OUTPUT: C:\path\to\file.txt`) so the UI can parse them into links.
+- Return non-zero exit behavior (throw or set error state) for fatal failures.
+- Use consistent text encoding (UTF-8 BOM).
+- For destructive actions, support `-WhatIf` and log clearly before and after execution.
+
+### OUTPUT FORMAT:
+Output exactly two files.
+1. `Invoke-[UtilityName]UI.ps1`
+2. `[UtilityName].ps1`
